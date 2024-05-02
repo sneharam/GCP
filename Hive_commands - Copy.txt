@@ -1,0 +1,78 @@
+Table Create Command
+create table student(age int,gender varchar(50),name varchar(50),
+course varchar(50),roll int,marks int,email varchar(50)) 
+row format delimited fields terminated by ',';
+==================================================================================
+create table student(age int,gender varchar(50),name varchar(50),
+course varchar(50),roll int,marks int,email varchar(50)) 
+row format delimited fields terminated by ','
+tblproperties ('skip.header.line.count'='1');
+==================================================================================
+Load Data from Hadoop Path
+load data inpath 'hadoop path' into table student;
+load data inpath '/student/StudentData.csv' into table student;
+==================================================================================
+Load Data from local Path
+load data local inpath '/home/ubh01/Desktop/hive/StudentData.csv' into table student;
+==================================================================================
+create external table student(age int,gender varchar(50),name varchar(50),
+course varchar(50),roll int,marks int,email varchar(50)) 
+row format delimited fields terminated by ','
+tblproperties ('skip.header.line.count'='1');
+==================================================================================
+create external table source(age int,gender varchar(50),name varchar(50),
+course varchar(50),roll int,marks int,email varchar(50)) 
+row format delimited fields terminated by ','
+tblproperties ('skip.header.line.count'='1');
+load data local inpath '/home/ubh01/Desktop/hive/StudentData.csv' into table source;
+
+
+
+HIVE PARTIONING STATIC and DYANMIC PARTITIONING
+-----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------
+
+create external table source(age int,gender varchar(50),name varchar(50),
+course varchar(50),roll int,marks int,email varchar(50)) 
+row format delimited fields terminated by ','
+tblproperties ('skip.header.line.count'='1');
+load data local inpath '/home/ubh01/Desktop/hive/StudentData.csv' into table source;
+==================================================================================
+create table karthick as select * from source;
+desc karthick;
+select * from karthick;
+==================================================================================
+create table sp (age int,gender varchar(50),name varchar(50),
+roll int,marks int,email varchar(50))
+partitioned by (course varchar(50));
+ 
+insert into table sp partition(course='OOP') select age,gender,name,roll,marks,email from source where course='OOP';
+insert into table sp partition(course='Cloud') select age,gender,name,roll,marks,email from source where course='Cloud';
+insert into table sp partition(course='DSA') select age,gender,name,roll,marks,email from source where course='DSA';
+==================================================================================
+create table dp (age int,gender varchar(50),name varchar(50),
+roll int,marks int,email varchar(50))
+partitioned by (course varchar(50));
+ 
+set hive.exec.dynamic.partition.mode=nonstrict;
+ 
+insert into table dp partition(course) select age,gender,name,roll,marks,email,course from source where course='OOP';
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+BUCKETING_HIVE
+---------------
+
+create table bk(age int,gender varchar(50),name varchar(50),
+course varchar(50),roll int,marks int,email varchar(50))
+clustered by(age) into 2 buckets;
+ 
+insert into table bk select * from source;
+==================================================================================
+ 
+create table bk(age int,gender varchar(50),name varchar(50),
+course varchar(50),roll int,marks int,email varchar(50))
+clustered by(age) into 3 buckets;
+ 
+create table bk(age int,gender varchar(50),name varchar(50),
+course varchar(50),roll int,marks int,email varchar(50))
+clustered by(course) into 6 buckets;
